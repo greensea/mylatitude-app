@@ -1,0 +1,87 @@
+#latitude-splash {
+    width: 98%;
+    height: 95%;
+    position: absolute;
+    z-index: 10000;         /* 将其放到最顶层 */
+    text-align: center;
+    background-color: #fff;
+}
+
+#page-index {
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    top: 40%;
+}
+#page-index button {
+    margin: 1em 0;
+}
+#page-index .logined .tips span {
+    font-weight: bold;
+    margin-right: 0.5em;
+}
+
+#page-index .check-login-loading {
+    visibility: hidden;
+    margin-top: 1.5em;
+}
+
+
+#page-map {
+    visibility: visible;
+    height: 200px;
+    position: fixed;
+    width: 100%;
+}
+
+#page-config h6 {
+    line-height: 0;
+    margin-top: 12px;
+}
+#page-config tr div {
+    white-space: normal;
+}
+
+#page-invite {
+    text-align: center;
+}
+#page-invite input[type=text] {
+    line-height: 2em;
+    font-size: 1.5em;
+}
+#page-invite .loading {
+    display: none;
+}
+
+#page-friends .friend {
+    width: 99%;
+    margin: 1% 0.5%;
+}
+#page-friends .friend .face img {
+    min-width: 96px;
+    min-height: 96px;
+}
+
+#page-friends .friend .action {
+    text-align: right;
+}
+#page-friends .base {
+    display: none;
+}
+#page-friends .loading {
+    margin-top: 2em;
+    width: 100%;
+    text-align: center;
+}
+
+.invisible-select {
+    position: absolute;
+    top: -1000px;
+    left; -1000px;
+}
+
+
+
+#latitude-background-loading {
+    visibility: hidden;
+}

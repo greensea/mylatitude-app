@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com https: 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https: ; media-src *">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+         
+        <script src="js/material.js"></script>
+
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="js/gmaps/gmaps.js"></script>
+
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script type="text/javascript" src="js/config.js" defer></script>
+        
+        <link rel="stylesheet" href="css/material.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" async>
+        <link rel="stylesheet" href="css/palette.css">
+        <link rel="stylesheet" href="css/core.css">
+        
+        
+
+        <title>我的纵横</title>
+    </head>
+    
+    <body>
+        <!-- Always shows a header, even in smaller screens. -->
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                  <!-- Title -->
+                  <span class="mdl-layout-title" id="title">位置信息</span>
+                  
+                  <!-- Add spacer, to align navigation to the right -->
+                  <div class="mdl-layout-spacer"></div>
+                  
+                  <!-- Navigation. We hide it in small screens. -->
+                  <nav class="mdl-navigation" id="latitude-menu">
+                        <!-- Right aligned menu below button -->
+                        <button id="demo-menu-lower-right"
+                                class="mdl-button mdl-js-button mdl-button--icon">
+                          <i class="material-icons">more_vert</i>
+                        </button>
+
+                        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                            for="demo-menu-lower-right">
+                          <li class="mdl-menu__item" onclick="page.change('page-index');">概览</li>
+                          <li class="mdl-menu__item" onclick="page.change('page-map');">地图</li>
+                          <li class="mdl-menu__item" onclick="page.change('page-friends');">好友列表</li>
+                          <li class="mdl-menu__item" onclick="page.change('page-invite');">邀请好友</li>
+                          <li class="mdl-menu__item" onclick="page.change('page-config');">设置</li>
+                          <li class="mylatitude-logout mdl-menu__item" onclick="app.logout(); page.change('page-index');">注销</li>
+                        </ul>
+                  </nav>
+                </div>
+            </header>
+            
+          
+          
+            <main class="mdl-layout__content">
+                <div class="page-content">
+            
+                    <!-- 主内容在此处 -->
+                    
+                    <!-- 首页页面 -->
+                    <div id="page-index" class="mdl-layout mdl-js-layout">
+                        <div class="mdl-grid" style="height: 100%;">
+                            <div class="not-logined mdl-cell-12-col mdl-cell--middle" style="display: none;">
+                                <div class="tips">
+                                    你还没有使用登录，要开始使用，请先登录
+                                </div>
+                                <div>
+                                    <button class="login-with-google mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">用谷歌账户登录</button>
+                                </div>
+                                <div>
+                                    <button class="check-login mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" style="display: none;">我已登录</button>
+                                </div>
+                            </div>
+                            
+                            <div class="logined mdl-cell-12-col mdl-cell--middle" style="display: none;">
+                                <i class="material-icons" style="font-size: 4em;">place</i>
+                                <div class="tips"><span class="secondary-text-color"></span>已登录，正在持续记录您的位置</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of 首页页面 -->
+                    
+                    
+                    <!-- 地图页面 -->
+                    <div id="page-map"  style="visibility: hidden;">
+                        <div class="mdl-layout mdl-js-layout" style="text-align: center;" id="map">
+                            地图正在载入中…
+                        </div>
+                    </div>
+                    <!-- End of 地图页面 -->
+                    
+                    
+                    <!-- 配置页面 -->
+                    <div id="page-config" style="display: none;">
+                        <table class="mdl-data-table mdl-shadow--2dp" style="width: 100%;">
+                          <tbody>
+                            <tr onclick="showSelection($('#update-interval'))">
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>位置采集间隔</h6>
+                                    <div class="secondary-text-color">多长时间采集一次位置信息。注意，由于位置信息是被动采集的，所以实际采集间隔可能大于此处的设置。</div>
+                                    
+                                    <select class="invisible-select" name="update-interval" id="update-interval">
+                                        <option value="1">1 秒</option>
+                                        <option value="60">1 分钟</option>
+                                        <option value="120">2 分钟</option>
+                                        <option value="300">5 分钟</option>
+                                        <option value="600">10 分钟</option>
+                                        <option value="900">15 分钟</option>
+                                        <option value="1200">20 分钟</option>
+                                        <option value="1800">30 分钟</option>
+                                        <option value="2400">40 分钟</option>
+                                        <option value="3600">1 小时</option>
+                                        <option value="7200">2 小时</option>
+                                        <option value="14400">4 小时</option>
+                                        <option value="21600">6 小时</option>
+                                        <option value="28800">8 小时</option>
+                                    </select>
+                                </td>
+                                <td></td>
+                            </tr>
+
+                            
+                            
+                            
+                            <tr onclick="showSelection($('#distance-filter'));">
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>最小移动距离</h6>
+                                    <div class="secondary-text-color">如果新探测到的位置距离上次探测到的位置距离不超过此处设定的值，则新探测到的位置将不会被记录。</div>
+                                    
+                                    <select class="invisible-select" name="distance-filter" id="distance-filter">
+                                        <option value="0">总是记录</option>
+                                        <option value="1">1 米</option>
+                                        <option value="5">5 米</option>
+                                        <option value="10">10 米</option>
+                                        <option value="20">20 米</option>
+                                        <option value="50">50 米</option>
+                                        <option value="100">100 米</option>
+                                        <option value="200">200 米</option>
+                                        <option value="500">500 米</option>
+                                        <option value="1000">1 千米</option>
+                                        <option value="2000">2 千米</option>
+                                        <option value="5000">5 千米</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            
+                            
+                            <tr onclick="showSelection($('#desired-accuracy'));">
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>最低精度</h6>
+                                    <div class="secondary-text-color">不记录精度低于最低精度的位置</div>
+                                    
+                                    <select class="invisible-select" name="desired-accuracy" id="desired-accuracy">
+                                        <option value="0">不限</option>
+                                        <option value="1">1 米</option>
+                                        <option value="2">2 米</option>
+                                        <option value="5">5 米</option>
+                                        <option value="10">10 米</option>
+                                        <option value="20">20 米</option>
+                                        <option value="30">30 米</option>
+                                        <option value="50">50 米</option>
+                                        <option value="100">100 米</option>
+                                        <option value="200">200 米</option>
+                                        <option value="300">300 米</option>
+                                        <option value="500">500 米</option>
+                                        <option value="1000">1 千米</option>
+                                        <option value="2000">2 千米</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            
+                             <tr onclick="showSelection($('#max-idle-time'));">
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>位置记录最小间隔</h6>
+                                    <div class="secondary-text-color">如果探测到新位置的时间距离上次记录位置的时间超过此处设定的值，则无视“最小移动距离”和“最小精度”的限制，记录新探测到的位置。</div>
+                                    
+                                    <select class="invisible-select" name="max-idle-time" id="max-idle-time">
+                                        <option value="0">总是记录</option>
+                                        <option value="60">1 分钟</option>
+                                        <option value="120">2 分钟</option>
+                                        <option value="300">5 分钟</option>
+                                        <option value="600">10 分钟</option>
+                                        <option value="900">15 分钟</option>
+                                        <option value="1200">20 分钟</option>
+                                        <option value="1800">30 分钟</option>
+                                        <option value="2400">40 分钟</option>
+                                        <option value="3600">1 小时</option>
+                                        <option value="7200">2 小时</option>
+                                        <option value="14400">4 小时</option>
+                                        <option value="21600">6 小时</option>
+                                        <option value="28800">8 小时</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                            
+                            
+                            <tr onclick="showSelection($('#min-upload-interval'));">
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>位置上传间隔</h6>
+                                    <div class="secondary-text-color">多长时间上传一次位置。如果设置得太低，会增加电池和网络流量的消耗。</div>
+                                    
+                                    <select class="invisible-select" name="min-upload-interval" id="min-upload-interval">
+                                        <option value="0">总是上传</option>
+                                        <option value="60">1 分钟</option>
+                                        <option value="120">2 分钟</option>
+                                        <option value="300">5 分钟</option>
+                                        <option value="600">10 分钟</option>
+                                        <option value="900">15 分钟</option>
+                                        <option value="1200">20 分钟</option>
+                                        <option value="1800">30 分钟</option>
+                                        <option value="2400">40 分钟</option>
+                                        <option value="3600">1 小时</option>
+                                        <option value="7200">2 小时</option>
+                                        <option value="14400">4 小时</option>
+                                        <option value="21600">6 小时</option>
+                                        <option value="28800">8 小时</option>
+                                    </select>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            
+                            
+                                                        
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>使用移动网络上传旧的位置</h6>
+                                    <div class="secondary-text-color">在即将上传新探测到的位置时，应用会将旧的未上传的位置信息一并上传。如果不需要使用此功能，请关闭此开关。</div>
+                                </td>
+                                <td>
+                                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="uploadOldByCell">
+                                        <input type="checkbox" id="uploadOldByCell" class="mdl-switch__input" checked />
+                                        <span class="mdl-switch__label"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <h6>调试</h6>
+                                    <div class="secondary-text-color">探测到新位置时，会播放声音和显示提示信息</div>
+                                </td>
+                                <td>
+                                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="is-debug">
+                                        <input type="checkbox" id="is-debug" class="mdl-switch__input" checked />
+                                        <span class="mdl-switch__label"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            
+                          </tbody>
+                        </table>
+                    </div>
+                    <!-- End of 配置页面 -->
+            
+                </div>
+            </main>
+        </div>
+    
+    </body>
+</html>
