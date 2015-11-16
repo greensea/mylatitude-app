@@ -1,3 +1,7 @@
+* {
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+
 #latitude-splash {
     width: 98%;
     height: 95%;
