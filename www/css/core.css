@@ -15,7 +15,7 @@
     text-align: center;
     width: 100%;
     position: fixed;
-    top: 40%;
+    top: 30%;
 }
 #page-index button {
     margin: 1em 0;
@@ -30,6 +30,13 @@
     margin-top: 1.5em;
 }
 
+#page-index .location-icon {
+    font-size: 10em;
+    color: #666;
+}
+#page-index .tips {
+    margin-top: 2em;
+}
 
 #page-map {
     visibility: visible;
@@ -44,6 +51,11 @@
 }
 #page-config tr div {
     white-space: normal;
+}
+
+#page-config table td {
+    padding-bottom: 0.5em;
+    vertical-align: middle;
 }
 
 #page-invite {

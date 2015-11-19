@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<metadata>Copyright (C) 2015 by original authors @ fontello.com</metadata>
+<defs>
+<font id="fontello" horiz-adv-x="1000" >
+<font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="delete" unicode="&#xe800;" d="m250 58c0-46 37-83 83-83h334c46 0 83 37 83 83v500h-500v-500z m542 625h-146l-42 42h-208l-42-42h-146v-83h584v83z" horiz-adv-x="1000" />
+<glyph glyph-name="refresh" unicode="&#xe805;" d="m735 585c-60 61-143 98-235 98-184 0-333-149-333-333s149-333 333-333c155 0 285 106 322 250h-87c-34-97-126-167-235-167-138 0-250 112-250 250s112 250 250 250c69 0 131-29 176-74l-134-134h291v291l-98-98z" horiz-adv-x="1000" />
+<glyph glyph-name="more-hori" unicode="&#xe806;" d="m250 433c-46 0-83-37-83-83s37-83 83-83 83 37 83 83-37 83-83 83z m500 0c-46 0-83-37-83-83s37-83 83-83 83 37 83 83-37 83-83 83z m-250 0c-46 0-83-37-83-83s37-83 83-83 83 37 83 83-37 83-83 83z" horiz-adv-x="1000" />
+<glyph glyph-name="more-vert" unicode="&#xe807;" d="m500 517c46 0 83 37 83 83s-37 83-83 83-83-37-83-83 37-83 83-83z m0-84c-46 0-83-37-83-83s37-83 83-83 83 37 83 83-37 83-83 83z m0-250c-46 0-83-37-83-83s37-83 83-83 83 37 83 83-37 83-83 83z" horiz-adv-x="1000" />
+<glyph glyph-name="location" unicode="&#xe808;" d="m500 767c-161 0-292-131-292-292 0-219 292-542 292-542s292 323 292 542c0 161-131 292-292 292z m0-396c-57 0-104 47-104 104s47 104 104 104 104-46 104-104-46-104-104-104z" horiz-adv-x="1000" />
+<glyph glyph-name="send" unicode="&#xe809;" d="m84-25l874 375-874 375-1-292 625-83-625-83z" horiz-adv-x="1000" />
+<glyph glyph-name="done" unicode="&#xe80a;" d="m375 175l-175 175-58-58 233-234 500 500-58 59-442-442z" horiz-adv-x="1000" />
+</font>
+</defs>
+</svg>
