@@ -81,6 +81,9 @@
 #page-friends .friend .action {
     text-align: right;
 }
+#page-friends i.icon {
+    font-size: 150%;
+}
 #page-friends .base {
     display: none;
 }
