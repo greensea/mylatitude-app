@@ -613,7 +613,7 @@ var page = {
     
     change: function(target) {
         $("#" + target).css("display", "");
-        if (['page-config', 'page-invite'].indexOf(target) >= 0) {
+        if (['page-config', 'page-invite', 'page-friends'].indexOf(target) >= 0) {
             var state = {};
             history.pushState(state, "", "#" + target);
         }
@@ -689,7 +689,7 @@ var page = {
                 
             case "page-friends":
                 this.Friends.refresh();
-                this.toggleMenu(false);
+                this.toggleMenu(true);
                 this.setTitle("好友列表");
                 break;
                 
