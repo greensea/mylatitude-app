@@ -439,7 +439,7 @@ var gslocation = {
             lng: earth.lng + dLng
         };
         
-        console.log("火星坐标转换：将 " + JSON.stringify(earth) + " 转换为 " + JSON.stringify(ret));
+        //console.log("火星坐标转换：将 " + JSON.stringify(earth) + " 转换为 " + JSON.stringify(ret));
         
         return ret;
     },
@@ -613,7 +613,7 @@ var page = {
     
     change: function(target) {
         $("#" + target).css("display", "");
-        if (['page-config', 'page-invite', 'page-friends'].indexOf(target) >= 0) {
+        if (['page-config', 'page-invite'].indexOf(target) >= 0) {
             var state = {};
             history.pushState(state, "", "#" + target);
         }
