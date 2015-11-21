@@ -1,11 +1,15 @@
 * {
     -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
+body {
+    overflow: hidden;
+}
 
 #latitude-splash {
-    width: 98%;
+    width: 99%;
     height: 95%;
     position: absolute;
+    left: 0;
     z-index: 10000;         /* 将其放到最顶层 */
     text-align: center;
     background-color: #fff;
