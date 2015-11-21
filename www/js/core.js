@@ -925,7 +925,7 @@ var page = {
             
             /// 绘制轨迹
             var opacity_step = 1.0 / tracks.length;
-            var opacity = opacity_step * 5;
+            var opacity = 1;
             for (var i = 0; i < paths.length; i++) {
                 app.gmaps.drawPolyline({
                     path: paths[i],
@@ -934,10 +934,10 @@ var page = {
                     storkeWeight: 6
                 });
                 
-                opacity += opacity_step;
-                if (opacity > 1.0) {
-                    opacity = 1;
+                if (opacity < 0.5) {
+                    opacity = 0.5;
                 }
+                opacity -= opacity_step;
             }
         },
     },
@@ -950,6 +950,10 @@ var page = {
         },
         
         refresh: function(){
+            if (!app.gmaps) {
+                page.Map.loadMap();
+            }
+            
             this.updateFriends();
         },
         
