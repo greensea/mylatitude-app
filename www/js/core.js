@@ -10,6 +10,7 @@ var app = {
         
         $(window).resize(function() {
             page.Map.resizeMap();
+            page.Index.updateStat();
         });
     },
     
@@ -313,16 +314,25 @@ var gslocation = {
     
     /**
      * 获取最后一次上报的位置，如果失败返回 null
+     * 
+     * @param force     是否无视最后更新时间强制更新，默认为 false
      */
     getLastLocation: function() {
         var loc = app.config("lastLocation");
+        var force = false;
+        
+        if (arguments.length >= 1) {
+            force = arguments[0];
+        }
         
         if (!loc) {
             loc = null;
         }
         
         /// 判断是否需要更新位置，如果本地保存的位置是 1 天前的，则更新之
-        if (!loc || ((new Date()).getTime() - loc.rtime * 1000 > 86400 * 1000)) {
+        if (force || !loc || ((new Date()).getTime() - loc.rtime * 1000 > 86400 * 1000)) {
+            console.log("查询最新的位置信息");
+            
             $.ajax({
                 url: "https://latitude.greensea.org:4433/api/v3/last_location.php?uid=" + account.getUID(),
                 dataType: "json",
@@ -340,9 +350,14 @@ var gslocation = {
                     else {
                         console.log("从服务器获取到了最新的位置信息: " + JSON.stringify(d.data));
                         app.config("lastLocation", d.data);
+                        page.Index.updateStat(d.data);
                     }
                 }
             });
+        }
+        else if (loc && loc['stat']) {
+            /// 使用本地的信息来更新移动距离信息
+            page.Index.updateStat(loc);
         }
         
         
@@ -755,6 +770,14 @@ var page = {
             });
             
             
+            /// 绑定必要的事件
+            $(".moon-distance").click(page.Index.onClickRocket);
+            
+            
+            /// 初始化统计界面
+            page.Index.updateStat();
+            
+            
             this.refresh();
             
             console.log("page-index 初始化完成");
@@ -779,7 +802,99 @@ var page = {
                 
                 $(".mylatitude-logout").css("display", "");
             }
-        }
+        },
+        
+        /**
+         * 更新到月球的距离
+         * 
+         * @param object    位置信息（从 last_location 接口获得的信息），如果为空，则使用本地缓存的信息
+         */
+        updateStat: function() {
+            var loc = undefined;
+            if (arguments.length > 0) {
+                loc = arguments[0];
+            }
+            else {
+                loc = app.config("lastLocation");
+            }
+            
+            if (!loc || !loc['stat']) {
+                console.log("没有传入位置信息，本地也没有位置信息，不会更新到月球的距离");
+                return;
+            }
+            
+            
+            var MOON_DISTANCE = 38.4 * 10000 * 1000;
+            
+            var distance = loc.stat.distance / 1000;
+            var distance_per_day = loc.stat.distance_per_day;
+            
+            var to_moon_distance = MOON_DISTANCE - distance * 1000; 
+            var to_moon_percent = to_moon_distance / MOON_DISTANCE;
+            var to_moon_days = to_moon_distance / distance_per_day;
+            
+            distance = Math.round(distance * 100) / 100;
+            distance_per_day = Math.round(distance_per_day * 100) / 100;
+            to_moon_distance = Math.round(to_moon_distance / 1000);
+            
+            if (to_moon_days > 999999999) {
+                to_moon_days = Infinity;
+            }
+            
+            
+            $("#page-index .stat td.moved p:first-child").html(distance + "<span>千米</span>");
+            $("#page-index .stat td.moved_per_day p:first-child").html(distance_per_day + "<span>米</span>");
+            $("#page-index .stat td.to_moon_distance p:first-child").html(to_moon_distance + "<span>千米</span>");
+            
+            if (to_moon_days == Infinity) {
+                $("#page-index .stat td.to_moon_days p:first-child").html("<span>还需</span>不知多久<span>才能</span>");
+            }
+            else if (to_moon_days > 999999) {
+                $("#page-index .stat td.to_moon_days p:first-child").html("<span>还需</span>" + Math.round(to_moon_days / 365.25) + "<span>年</span>");
+            }
+            else {
+                $("#page-index .stat td.to_moon_days p:first-child").html("<span>还需</span>" + Math.round(to_moon_days) + "<span>天</span>");
+            }
+            
+            
+            /// Tricks here:
+            /// 在程序刚刚加载的时候，$(".moon-distance i").width() 的值是 0,此时 $(".moon-distance .walked").width() 的值也不正确
+            /// 这时候绘制出的火箭位置也不正确，为了避免这种情况，当 $(".moon-distance i").width() == 0 的时候，我们不显示火箭，同时在 1s 后重新调用此函数
+            if ($(".moon-distance i").width() == 0) {
+                setTimeout(page.Index.updateStat, 1000);
+            }
+            else {
+                $("#page-index .moon-distance").css("visibility", "visible");
+            }
+            
+            /// 移动火箭位置
+            /// 背景长度取值为 [0%, 100%]
+            var width = (100 - to_moon_percent * 100);
+            $(".moon-distance .walked").css("width", width + "%");
+            
+            /// 将火箭中心位置 (25/60 * width) 设定到与背景长度相同的位置上
+            var left = $(".moon-distance .walked").width() - $(".moon-distance i").width() * (25 / 60);
+            $(".moon-distance i").css("left", left + "px");
+        },
+        
+        /**
+         * 点击首页下方登月火箭时的处理方法
+         */
+        onClickRocket: function(e) {
+            /// 1 分钟之内不会重复更新，避免消耗过多流量
+            var ts = (new Date()).getTime();
+            if (!this.lastUpdateTime) {
+                this.lastUpdateTime = 0;
+            }
+            if (ts - this.lastUpdateTime > 60 * 1000) {
+                gslocation.getLastLocation(true);
+                this.lastUpdateTime = ts;
+            }
+            
+            
+            $(".positioned").slideToggle();
+            $(".stat").slideToggle();
+        },
     },
     
     Map: {

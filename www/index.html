@@ -94,8 +94,44 @@
                             </div>
                             
                             <div class="logined mdl-cell--12-col  mdl-cell--middle" style="display: none;">
-                                <i class="icon-location location-icon"></i>
-                                <div class="tips"><span class="secondary-text-color"></span>已登录，正在持续记录您的位置</div>
+                                <div class="positioned">
+                                    <i class="icon-location location-icon"></i>
+                                    <div class="tips"><span class="secondary-text-color"></span>已登录，正在持续记录您的位置</div>
+                                </div>
+                                
+                                <div class="stat" style="display: none;">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td class="moved">
+                                                    <p>...<span>千米</span></p>
+                                                    <p>已移动</p>
+                                                </td>
+                                                <td class="moved_per_day">
+                                                    <p>...<span>米</span></p>
+                                                    <p>日均移动</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="to_moon_distance">
+                                                    <p>...<span>千米</span></p>
+                                                    <p>距离月球</p>
+                                                </td>
+                                                <td class="to_moon_days">
+                                                    <p><span>还需</span>...<span>天</span></p>
+                                                    <p>到达月球</p>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="moon-distance" style="visibility: hidden;">
+                                    <div class="progress">
+                                        <div class="walked">&nbsp;</div>
+                                        <i class="icon-rocket">&nbsp;</i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

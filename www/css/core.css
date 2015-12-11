@@ -20,6 +20,7 @@ body {
     width: 100%;
     position: fixed;
     top: 30%;
+    height: 70%;
 }
 #page-index button {
     margin: 1em 0;
@@ -40,6 +41,50 @@ body {
 }
 #page-index .tips {
     margin-top: 2em;
+}
+
+#page-index .stat table {
+    width: 100%;
+}
+#page-index .stat table tbody td {
+    padding-bottom: 2em;
+}
+#page-index .stat table td p {
+    font-size: 1.5em;
+}
+#page-index .stat table td p:first-child {
+    font-size: 2em;
+}
+#page-index .stat table td p:first-child span {
+    font-size: 0.5em;
+    color: #888;
+    margin-left: 0.25em;
+}
+
+
+#page-index .moon-distance {
+    width: 100%;
+    background-color: #bbbbb1;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-image: linear-gradient(135deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent);
+    background-size: 40px 40px;
+}
+#page-index .moon-distance .progress {
+    height: 2em;
+}
+#page-index .moon-distance .walked {
+    background-color: #ef3;
+    width: 50%;
+    height: 100%;
+}
+#page-index .moon-distance i.icon-rocket {
+    position: absolute;
+    top: -0.35em;
+    font-size: 3em;
+    color: #888;
 }
 
 #page-map {
