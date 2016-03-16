@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.greensea.mylatitude" version="0.1.9" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.greensea.mylatitude" version="0.2.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>我的纵横</name>
     <description>
         类似谷歌纵横的，可以在后台持续追踪位置，并显示好友的位置。
@@ -20,10 +20,16 @@
     <platform name="android">
         <allow-intent href="market:*" />
         <icon src="www/img/icon-144.png" density="xxhdpi"/>  
-        <splash src="" />
+        <splash src="www/img/splash.png" density="xxhdpi" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
+    
+    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="FadeSplashScreenDuration" value="1000"/>
+    <preference name="ShowSplashScreenSpinner" value="false"/>
+
+
 </widget>

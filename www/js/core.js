@@ -1506,7 +1506,7 @@ app.initialize();
 $(document).ready(function() {
     console.log("document ready'");
     
-    setTimeout(function() {$("#latitude-splash").fadeOut(1000);}, 1500);
+    //setTimeout(function() {$("#latitude-splash").fadeOut(1000);}, 1500);
     
     page.init();
     
