@@ -730,6 +730,13 @@ var page = {
             history.pushState(state, "", "#" + target);
         }
         
+        if (target == 'page-map') {
+            $("nav li.history-track").show();
+        }
+        else {
+            $("nav li.history-track").hide();
+        }
+        
         this.displayPage(target);
     },
     
@@ -1152,6 +1159,42 @@ var page = {
                 opacity -= opacity_step;
             }
         },
+        
+        historyTrackSelector: function() {
+            if (app._data.lastSelectedTrackDate === undefined) {
+                app._data.lastSelectedTrackDate = new Date();
+            }
+            
+            var opt = {
+                date: app._data.lastSelectedTrackDate,
+                mode: 'date',
+                androidTheme: datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT,
+                titleText: '选择足迹日期',
+            };
+            
+            datePicker.show(opt, page.Map.historyTrack);
+        },
+        
+        
+        /**
+         * 获取指定日的足迹并显示，传入的参数为 Date 对象
+         */
+        historyTrack: function(date) {
+            app._data.lastSelectedTrackDate = date;
+            $.myajax({
+                url: "/api/v3/tracks.php",
+                method: "get",
+                data: {
+                    uid: account.getUID(),
+                    date: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
+                },
+                
+                success: function(d) {
+                    page.Map.refreshTrack(d.tracks);
+                }
+            });  
+        },
+        
     },
     
         

@@ -5,6 +5,10 @@ body {
     overflow: hidden;
 }
 
+nav li.history-track {
+    display: none;
+}
+
 #latitude-splash {
     width: 100%;
     height: 100%;
