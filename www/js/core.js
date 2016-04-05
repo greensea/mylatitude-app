@@ -1,5 +1,104 @@
+(function ($) {
+    $.extend({
+        myajax: function(opt) {
+            opt.dataType = "json";
+            
+            if (!opt.beforeSend) {
+                console.log("myajax 没有定义 beforeSend 回调函数，使用默认函数代替");
+                opt.beforeSend = function() {};
+            }
+            if (!opt.complete) {
+                console.log("myajax 没有定义 complete 回调函数，使用默认函数代替");
+                opt.complete = function() {};
+            }
+            if (!opt.error) {
+                console.log("myajax 没有定义 error 回调函数，使用默认函数代替");
+                opt.error = function(x, s, e) {
+                    alert(e);
+                };
+            }
+            if (!opt.success) {
+                console.log("myajax 没有定义 success 回调函数，使用默认函数代替");
+                opt.success = function(d) {};
+            }
+            
+            if (opt.url.substr(0, 7) == 'http://' || opt.url.substr(0, 8) == 'https://') {
+                /// 绝对路径，不要修改
+            }
+            else {
+                opt.url = "https://latitude.greensea.org:4433/" + opt.url;
+            }
+            
+            $.ajax({
+                url: opt.url,
+                method: opt.method,
+                dataType: "json",
+                data: opt.data,
+                
+                beforeSend: function () {
+                    app.loading(1);
+                    return opt.beforeSend();
+                },
+                
+                complete: function() {
+                    app.loading(-1);
+                    return opt.complete();
+                },
+                
+                error: function (x, s, e) {
+                    opt.error(x, s, "网络错误：" + e);
+                },
+                
+                success: function(d) {
+                    if (d.code == 0) {
+                        opt.success(d.data);
+                    }
+                    else {
+                        opt.error(null, null, d.message);
+                    }
+                }
+            });
+        },
+        
+        querystring: function(name) {
+            var qs = window.location.href.split("?");
+            if (qs.length == 1) {
+                return "";
+            }
+            
+            
+            var ret = {};
+            params = qs[1].split("&");
+            for (k in params) {
+                var token = params[k].split("=");
+                if (token.length == 1) {
+                    ret[token[0]] = "";
+                }
+                else {
+                    ret[token[0]] = token[1];
+                }
+            }
+            
+            
+            if (name === undefined) {
+                return ret;
+            }
+            else {
+                if (ret[name] == undefined) {
+                    return "";
+                }
+                else {
+                    return ret[name];
+                }
+            }
+        }
+    });
+})(jQuery);
+
 var app = {
-    _data: {},  /** 用于保存一些临时的变量 */
+    _data: {
+        loadingCount: 0,
+    },  /** 用于保存一些临时的变量 */
     
     initialize: function() {
         this.bindEvents();
@@ -255,6 +354,22 @@ var app = {
         
         return txt;
     },
+    
+    /**
+     * 显示载入中图标，传入参数 1 表示新增一个正在载入，传入参数 -1 表示结束一个正在载入
+     */
+    loading: function(n) {
+        app._data.loadingCount += n;
+        if (app._data.loadingCount < 0) {
+            console.log("错误，app._data.loadingCount 小于 0");
+        }
+        else if (app._data.loadingCount == 0) {
+            $("#latitude-background-loading").css("visibility", "hidden");
+        }
+        else {
+            $("#latitude-background-loading").css("visibility", "visible");
+        }
+    },
 };
 
 
@@ -333,9 +448,8 @@ var gslocation = {
         if (force || !loc || ((new Date()).getTime() - loc.rtime * 1000 > 86400 * 1000)) {
             console.log("查询最新的位置信息");
             
-            $.ajax({
-                url: "https://latitude.greensea.org:4433/api/v3/last_location.php?uid=" + account.getUID(),
-                dataType: "json",
+            $.myajax({
+                url: "/api/v3/last_location.php?uid=" + account.getUID(),
                 data: {},
                 method: "get",
                 
@@ -344,14 +458,9 @@ var gslocation = {
                 },
                 
                 success: function (d) {
-                    if (d.code !== 0) {
-                        console.log("无法从服务器获取最新的位置信息，服务器返回: " + d.message);
-                    }
-                    else {
-                        console.log("从服务器获取到了最新的位置信息: " + JSON.stringify(d.data));
-                        app.config("lastLocation", d.data);
-                        page.Index.updateStat(d.data);
-                    }
+                    console.log("从服务器获取到了最新的位置信息: " + JSON.stringify(d));
+                    app.config("lastLocation", d);
+                    page.Index.updateStat(d);
                 }
             });
         }
@@ -383,32 +492,25 @@ var gslocation = {
         }
             
         
-        $.ajax({
-            url: "https://latitude.greensea.org:4433/api/v3/friend/locations.php",
-            dataType: "json",
+        $.myajax({
+            url: "/api/v3/friend/locations.php",
             method: "get",
             data: {
                 uid: account.getUID(),
             },
             
             error: function(x, s, e) {
-                console.log("无法更新好友位置数据，网络错误：" + e);
+                console.log("无法更新好友位置数据，错误：" + e);
                 failureFn(e);
             },
             
             success: function(d) {
-                if (d.code !== 0) {
-                    console.log("无法更新好友位置数据，服务器返回错误: " + d.message);
-                    failureFn(d.message);
-                }
-                else {
-                    console.log("成功更新好友位置数据");
-                    app.config("friendLocations", d.data.friends);
-                    page.Friends.refreshFriend(d.data.friends);
-                    page.Map.refreshFriend(d.data.friends);
-                    page.Map.refreshTrack(d.data.tracks);
-                    successFn(d.data);
-                }
+                console.log("成功更新好友位置数据");
+                app.config("friendLocations", d.friends);
+                page.Friends.refreshFriend(d.friends);
+                page.Map.refreshFriend(d.friends);
+                page.Map.refreshTrack(d.tracks);
+                successFn(d);
             },
         }); 
     },
@@ -546,27 +648,22 @@ var account = {
             failureFn = arguments[1];
         }
         
-        $.ajax({
-            url: "https://latitude.greensea.org:4433/api/getuser.php",
+        $.myajax({
+            url: "/api/getuser.php",
             method: "get",
-            dataType: "json",
             data: {
                 uid: account.getUID(),
             },
             
             success: function(data) {
-                if (data.code === 0) {
-                    console.log("成功从服务器获取当前登录用户信息: " + JSON.stringify(data.data));
-                    
-                    /// 刷新本地用户信息
-                    app.config("user", data.data.user);
-                    
-                    /// 回调
-                    successFn(data.data.user);
-                }
-                else {
-                    failureFn("获取用户信息出错，服务器返回: " + data.message);
-                }
+                console.log("成功从服务器获取当前登录用户信息: " + JSON.stringify(data));
+                
+                /// 刷新本地用户信息
+                app.config("user", data.user);
+                
+                /// 回调
+                successFn(data.user);
+
             },
             
             error: function(x, s, e) {
@@ -1073,32 +1170,18 @@ var page = {
         },
         
         updateFriends: function() {
-            $.ajax({
-                url: "https://latitude.greensea.org:4433/api/v3/friend/list.php?uid=" + account.getUID(),
-                dataType: "json",
+            $.myajax({
+                url: "/api/v3/friend/list.php?uid=" + account.getUID(),
                 method: "GET",
                 data: {},
                 
-                beforeSend: function() {
-                    $("#latitude-background-loading").css("visibility", "visible");
-                },
-                
                 error: function(x, s, e) {
-                    console.log("好友列表刷新失败，网络错误: " + e);
+                    console.log("好友列表刷新失败，错误: " + e);
                 },
                     
                 success: function(d) {
-                    if (d.code !== 0) {
-                        console.log("好友列表刷新失败，服务器返回错误: " + d.message);
-                    }
-                    else {
-                        console.log("成功获取好友数据");
-                        page.Friends.refreshFriends(d.data);
-                    }
-                },
-                
-                complete: function() {
-                    $("#latitude-background-loading").css("visibility", "hidden");
+                    console.log("成功获取好友数据");
+                    page.Friends.refreshFriends(d);
                 },
             });
         },
@@ -1167,9 +1250,8 @@ var page = {
                     var obj = card;
                     var email = friend.email;
                     return function() {
-                        $.ajax({
-                            url: "https://latitude.greensea.org:4433/api/v3/friend/delete.php",
-                            dataType: "json",
+                        $.myajax({
+                            url: "/api/v3/friend/delete.php",
                             method: "post",
                             data: {
                                 email: email,
@@ -1182,21 +1264,16 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("删除好友失败，网络错误: " + e);
+                                console.log("删除好友失败，错误: " + e);
                             },
                             
                             success: function(d) {
-                                if (d.code !== 0) {
-                                    console.log("删除好友失败，服务器返回错误: " + d.message);
-                                }
-                                else {
-                                    $(obj).slideUp({
-                                        done: function(){
-                                            $(obj).remove();
-                                            page.Friends.refresh();
-                                        }
-                                    });
-                                }
+                                $(obj).slideUp({
+                                    done: function(){
+                                        $(obj).remove();
+                                        page.Friends.refresh();
+                                    }
+                                });
                             },
                             
                             complete: function() {
@@ -1249,9 +1326,8 @@ var page = {
                     var obj = card;
                     var invite_id = invite.invite_id;
                     return function() {
-                        $.ajax({
-                            url: "https://latitude.greensea.org:4433/api/v3/friend/revert_invite.php",
-                            dataType: "json",
+                        $.myajax({
+                            url: "/api/v3/friend/revert_invite.php",
                             method: "post",
                             data: {
                                 invite_id: invite_id,
@@ -1268,17 +1344,12 @@ var page = {
                             },
                             
                             success: function(d) {
-                                if (d.code !== 0) {
-                                    console.log("撤销邀请失败，服务器返回错误: " + d.message);
-                                }
-                                else {
-                                    $(obj).slideUp({
-                                        done: function(){
-                                            $(obj).remove();
-                                            page.Friends.refresh();
-                                        }
-                                    });
-                                }
+                                $(obj).slideUp({
+                                    done: function(){
+                                        $(obj).remove();
+                                        page.Friends.refresh();
+                                    }
+                                });
                             },
                             
                             complete: function() {
@@ -1331,9 +1402,8 @@ var page = {
                     var obj = card;
                     var invite_id = invite.invite_id;
                     return function() {
-                        $.ajax({
-                            url: "https://latitude.greensea.org:4433/api/v3/friend/accept.php",
-                            dataType: "json",
+                        $.myajax({
+                            url: "/api/v3/friend/accept.php",
                             method: "post",
                             data: {
                                 invite_id: invite_id,
@@ -1346,21 +1416,16 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("同意请求失败，网络错误: " + e);
+                                console.log("同意请求失败，错误: " + e);
                             },
                             
                             success: function(d) {
-                                if (d.code !== 0) {
-                                    console.log("同意请求失败，服务器返回错误: " + d.message);
-                                }
-                                else {
-                                    $(obj).slideUp({
-                                        done: function(){
-                                            $(obj).remove();
-                                            page.Friends.refresh();
-                                        }
-                                    });
-                                }
+                                $(obj).slideUp({
+                                    done: function(){
+                                        $(obj).remove();
+                                        page.Friends.refresh();
+                                    }
+                                });
                             },
                             
                             complete: function() {
@@ -1375,9 +1440,8 @@ var page = {
                     var obj = card;
                     var invite_id = invite.invite_id;
                     return function() {
-                        $.ajax({
-                            url: "https://latitude.greensea.org:4433/api/v3/friend/deny.php",
-                            dataType: "json",
+                        $.myajax({
+                            url: "/api/v3/friend/deny.php",
                             method: "post",
                             data: {
                                 invite_id: invite_id,
@@ -1390,21 +1454,16 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("拒绝请求失败，网络错误: " + e);
+                                console.log("拒绝请求失败，错误: " + e);
                             },
                             
                             success: function(d) {
-                                if (d.code !== 0) {
-                                    console.log("拒绝请求失败，服务器返回错误: " + d.message);
-                                }
-                                else {
-                                    $(obj).slideUp({
-                                        done: function(){
-                                            $(obj).remove();
-                                            page.Friends.refresh();
-                                        }
-                                    });
-                                }
+                                $(obj).slideUp({
+                                    done: function(){
+                                        $(obj).remove();
+                                        page.Friends.refresh();
+                                    }
+                                });
                             },
                             
                             complete: function() {
@@ -1438,9 +1497,8 @@ var page = {
                 return;
             }
             
-            $.ajax({
-                url: "https://latitude.greensea.org:4433/api/v3/friend/invite.php",
-                dataType: "json",
+            $.myajax({
+                url: "/api/v3/friend/invite.php",
                 method: "post",
                 data: {
                     uid: account.getUID(),
@@ -1453,16 +1511,11 @@ var page = {
                 },
                 
                 error: function(x, s, e) {
-                    $("#page-invite .tips").text("网络错误: " + e);
+                    $("#page-invite .tips").text("出错了: " + e);
                 },
                 
                 success: function (d) {
-                    if (d.code !== 0) {
-                        $("#page-invite .tips").text("出错了: " + d.message);
-                    }
-                    else {
-                        $("#page-invite .tips").text("邀请已发出，对方同意后你就可以看到对方了");
-                    }
+                    $("#page-invite .tips").text("邀请已发出，对方同意后你就可以看到对方了");
                 },
                 
                 complete: function() {
