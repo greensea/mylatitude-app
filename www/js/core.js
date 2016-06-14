@@ -181,6 +181,10 @@ var app = {
         console.log("设备启动成功");
     },
     
+    alert: function (msg) {
+        console.log(msg);
+        alert(alert);
+    },
     
     updateLocationConfig: function (settings) {
         console.log("重设位置服务的配置: " + JSON.stringify(settings));
@@ -454,7 +458,7 @@ var gslocation = {
                 method: "get",
                 
                 error: function(x, s, e) {
-                    console.log("无法从服务器获取最新的位置信息: " + e);
+                    app.alert("无法从服务器获取最新的位置信息: " + e);
                 },
                 
                 success: function (d) {
@@ -500,7 +504,7 @@ var gslocation = {
             },
             
             error: function(x, s, e) {
-                console.log("无法更新好友位置数据，错误：" + e);
+                app.alert("无法更新好友位置数据，错误：" + e);
                 failureFn(e);
             },
             
@@ -1219,7 +1223,7 @@ var page = {
                 data: {},
                 
                 error: function(x, s, e) {
-                    console.log("好友列表刷新失败，错误: " + e);
+                    app.alert("好友列表刷新失败，错误: " + e);
                 },
                     
                 success: function(d) {
@@ -1307,7 +1311,7 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("删除好友失败，错误: " + e);
+                                app.alert("删除好友失败，错误: " + e);
                             },
                             
                             success: function(d) {
@@ -1383,7 +1387,7 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("撤销邀请失败，网络错误: " + e);
+                                app.alert("撤销邀请失败，网络错误: " + e);
                             },
                             
                             success: function(d) {
@@ -1459,7 +1463,7 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("同意请求失败，错误: " + e);
+                                app.alert("同意请求失败，错误: " + e);
                             },
                             
                             success: function(d) {
@@ -1497,7 +1501,7 @@ var page = {
                             },
                             
                             error: function(x, s, e) {
-                                console.log("拒绝请求失败，错误: " + e);
+                                app.alert("拒绝请求失败，错误: " + e);
                             },
                             
                             success: function(d) {
