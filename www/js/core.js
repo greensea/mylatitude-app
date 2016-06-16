@@ -46,7 +46,7 @@
                 },
                 
                 error: function (x, s, e) {
-                    opt.error(x, s, "网络错误：" + e);
+                    opt.error(x, s, ["网络错误：", e].join("，"));
                 },
                 
                 success: function(d) {
@@ -183,7 +183,7 @@ var app = {
     
     alert: function (msg) {
         console.log(msg);
-        alert(alert);
+        alert(msg);
     },
     
     updateLocationConfig: function (settings) {
