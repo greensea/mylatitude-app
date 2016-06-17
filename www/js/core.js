@@ -46,7 +46,7 @@
                 },
                 
                 error: function (x, s, e) {
-                    opt.error(x, s, ["网络错误：", e].join("，"));
+                    opt.error(x, s, ["网络错误", e].join("："));
                 },
                 
                 success: function(d) {
